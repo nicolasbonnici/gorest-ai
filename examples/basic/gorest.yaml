@@ -1,0 +1,67 @@
+# GoREST Configuration with AI Plugin
+database:
+  url: "${DATABASE_URL:postgres://localhost/gorest_ai?sslmode=disable}"
+
+server:
+  port: 8000
+  host: "0.0.0.0"
+
+plugins:
+  # AI Plugin Configuration
+  - name: ai
+    enabled: true
+    config:
+      # Provider Selection
+      default_provider: "anthropic"
+      enabled_providers:
+        - anthropic
+        - openai
+        - gemini
+        - mistral
+
+      # API Keys (use environment variables)
+      anthropic_api_key: "${ANTHROPIC_API_KEY}"
+      anthropic_base_url: "" # Optional, defaults to https://api.anthropic.com
+
+      openai_api_key: "${OPENAI_API_KEY}"
+      openai_base_url: "" # Optional, defaults to https://api.openai.com/v1
+
+      gemini_api_key: "${GEMINI_API_KEY}"
+      gemini_base_url: "" # Optional, defaults to https://generativelanguage.googleapis.com
+
+      mistral_api_key: "${MISTRAL_API_KEY}"
+      mistral_base_url: "" # Optional, defaults to https://api.mistral.ai
+
+      # Features
+      enable_cache: true
+      cache_ttl: 3600 # seconds
+      enable_fallback: true
+      enable_quota: true
+
+      # Limits
+      max_tokens: 4096
+      default_temperature: 0.7
+      rate_limit_per_min: 60
+      request_timeout: 30 # seconds
+
+      # Pagination
+      pagination_limit: 20
+      max_pagination_limit: 100
+
+      # Security
+      require_auth: false # Set to true in production with auth plugin
+      allow_anonymous: true # Set to false in production
+
+      # Audit
+      enable_audit: true
+      retain_audit_days: 90
+
+# Migrations
+migrations:
+  enabled: true
+  auto_migrate: true
+
+# Logging
+logging:
+  level: "info"
+  format: "json"
