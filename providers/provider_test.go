@@ -85,7 +85,7 @@ func TestProviderRegistry(t *testing.T) {
 
 	// Test List
 	provider2 := NewMockProvider("test2")
-	registry.Register(provider2)
+	_ = registry.Register(provider2)
 
 	names := registry.List()
 	assert.Contains(t, names, "test1")

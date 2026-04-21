@@ -2,7 +2,6 @@ package anthropic
 
 import (
 	"bufio"
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -93,17 +92,4 @@ func processStream(reader io.Reader, chunkChan chan<- providers.StreamChunk) err
 	}
 
 	return nil
-}
-
-// parseSSELine parses a single SSE line
-func parseSSELine(line string) (string, string, error) {
-	parts := bytes.SplitN([]byte(line), []byte(":"), 2)
-	if len(parts) != 2 {
-		return "", "", fmt.Errorf("invalid SSE format")
-	}
-
-	field := string(bytes.TrimSpace(parts[0]))
-	value := string(bytes.TrimSpace(parts[1]))
-
-	return field, value, nil
 }

@@ -54,10 +54,6 @@ func (p *Plugin) Initialize(config map[string]interface{}) error {
 
 	p.service = NewService(&p.config, p.registry, p.db)
 
-	if err := p.registerMigrations(); err != nil {
-		return fmt.Errorf("failed to register migrations: %w", err)
-	}
-
 	logger.Log.Info("AI plugin initialized",
 		"default_provider", p.config.DefaultProvider,
 		"enabled_providers", p.config.EnabledProviders,
@@ -165,16 +161,11 @@ func (p *Plugin) initializeProviders() error {
 	return nil
 }
 
-func (p *Plugin) registerMigrations() error {
-	migrationList := migrations.GetMigrations()
+func (p *Plugin) MigrationSource() any {
+	return migrations.NewSource()
+}
 
-	for _, migration := range migrationList {
-		if err := p.db.RegisterMigration(migration); err != nil {
-			return fmt.Errorf("failed to register migration %s: %w", migration.ID, err)
-		}
-	}
-
-	logger.Log.Info("Registered migrations", "count", len(migrationList))
+func (p *Plugin) MigrationDependencies() []string {
 	return nil
 }
 

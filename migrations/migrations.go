@@ -1,13 +1,21 @@
 package migrations
 
 import (
+	"context"
+	"fmt"
+
 	"github.com/nicolasbonnici/gorest/database"
-	"github.com/nicolasbonnici/gorest/migration"
+	"github.com/nicolasbonnici/gorest/migrations"
 )
 
+// NewSource creates a new migration source for the AI plugin
+func NewSource() migrations.MigrationSource {
+	return migrations.NewGoMigrationSource("ai", GetMigrations())
+}
+
 // GetMigrations returns all migrations for the AI plugin
-func GetMigrations() []migration.Migration {
-	return []migration.Migration{
+func GetMigrations() []migrations.Migration {
+	return []migrations.Migration{
 		createAIProvidersTable(),
 		createAIRequestsTable(),
 		createAICacheTable(),
@@ -16,16 +24,18 @@ func GetMigrations() []migration.Migration {
 }
 
 // createAIProvidersTable creates the ai_providers table
-func createAIProvidersTable() migration.Migration {
-	return migration.Migration{
-		ID:          "ai_001_create_providers_table",
-		Description: "Create ai_providers table for storing AI provider configurations",
-		Up: func(db database.Database) error {
-			var query string
+func createAIProvidersTable() migrations.Migration {
+	return migrations.Migration{
+		Version: "20250101000001",
+		Name:    "create_ai_providers_table",
+		Source:  "ai",
+		Executor: &dynamicSQLExecutor{
+			upFunc: func(ctx context.Context, db database.Database) error {
+				var query string
 
-			switch db.Type() {
-			case "postgres":
-				query = `
+				switch db.DriverName() {
+				case "postgres":
+					query = `
 					CREATE TABLE IF NOT EXISTS ai_providers (
 						id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 						name VARCHAR(50) NOT NULL UNIQUE,
@@ -44,8 +54,8 @@ func createAIProvidersTable() migration.Migration {
 					CREATE INDEX IF NOT EXISTS idx_ai_providers_enabled ON ai_providers(enabled);
 					CREATE INDEX IF NOT EXISTS idx_ai_providers_priority ON ai_providers(priority);
 				`
-			case "mysql":
-				query = `
+				case "mysql":
+					query = `
 					CREATE TABLE IF NOT EXISTS ai_providers (
 						id CHAR(36) PRIMARY KEY,
 						name VARCHAR(50) NOT NULL UNIQUE,
@@ -64,8 +74,8 @@ func createAIProvidersTable() migration.Migration {
 						INDEX idx_ai_providers_priority (priority)
 					);
 				`
-			case "sqlite":
-				query = `
+				case "sqlite":
+					query = `
 					CREATE TABLE IF NOT EXISTS ai_providers (
 						id TEXT PRIMARY KEY,
 						name TEXT NOT NULL UNIQUE,
@@ -84,29 +94,34 @@ func createAIProvidersTable() migration.Migration {
 					CREATE INDEX IF NOT EXISTS idx_ai_providers_enabled ON ai_providers(enabled);
 					CREATE INDEX IF NOT EXISTS idx_ai_providers_priority ON ai_providers(priority);
 				`
-			}
+				default:
+					return fmt.Errorf("unsupported database driver: %s", db.DriverName())
+				}
 
-			_, err := db.Exec(query)
-			return err
-		},
-		Down: func(db database.Database) error {
-			_, err := db.Exec("DROP TABLE IF EXISTS ai_providers")
-			return err
+				_, err := db.Exec(ctx, query)
+				return err
+			},
+			downFunc: func(ctx context.Context, db database.Database) error {
+				_, err := db.Exec(ctx, "DROP TABLE IF EXISTS ai_providers")
+				return err
+			},
 		},
 	}
 }
 
 // createAIRequestsTable creates the ai_requests table
-func createAIRequestsTable() migration.Migration {
-	return migration.Migration{
-		ID:          "ai_002_create_requests_table",
-		Description: "Create ai_requests table for audit trail of AI requests",
-		Up: func(db database.Database) error {
-			var query string
+func createAIRequestsTable() migrations.Migration {
+	return migrations.Migration{
+		Version: "20250101000002",
+		Name:    "create_ai_requests_table",
+		Source:  "ai",
+		Executor: &dynamicSQLExecutor{
+			upFunc: func(ctx context.Context, db database.Database) error {
+				var query string
 
-			switch db.Type() {
-			case "postgres":
-				query = `
+				switch db.DriverName() {
+				case "postgres":
+					query = `
 					CREATE TABLE IF NOT EXISTS ai_requests (
 						id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 						user_id UUID,
@@ -132,8 +147,8 @@ func createAIRequestsTable() migration.Migration {
 					CREATE INDEX IF NOT EXISTS idx_ai_requests_status ON ai_requests(status);
 					CREATE INDEX IF NOT EXISTS idx_ai_requests_created_at ON ai_requests(created_at DESC);
 				`
-			case "mysql":
-				query = `
+				case "mysql":
+					query = `
 					CREATE TABLE IF NOT EXISTS ai_requests (
 						id CHAR(36) PRIMARY KEY,
 						user_id CHAR(36),
@@ -159,8 +174,8 @@ func createAIRequestsTable() migration.Migration {
 						INDEX idx_ai_requests_created_at (created_at)
 					);
 				`
-			case "sqlite":
-				query = `
+				case "sqlite":
+					query = `
 					CREATE TABLE IF NOT EXISTS ai_requests (
 						id TEXT PRIMARY KEY,
 						user_id TEXT,
@@ -186,29 +201,34 @@ func createAIRequestsTable() migration.Migration {
 					CREATE INDEX IF NOT EXISTS idx_ai_requests_status ON ai_requests(status);
 					CREATE INDEX IF NOT EXISTS idx_ai_requests_created_at ON ai_requests(created_at);
 				`
-			}
+				default:
+					return fmt.Errorf("unsupported database driver: %s", db.DriverName())
+				}
 
-			_, err := db.Exec(query)
-			return err
-		},
-		Down: func(db database.Database) error {
-			_, err := db.Exec("DROP TABLE IF EXISTS ai_requests")
-			return err
+				_, err := db.Exec(ctx, query)
+				return err
+			},
+			downFunc: func(ctx context.Context, db database.Database) error {
+				_, err := db.Exec(ctx, "DROP TABLE IF EXISTS ai_requests")
+				return err
+			},
 		},
 	}
 }
 
 // createAICacheTable creates the ai_cache table
-func createAICacheTable() migration.Migration {
-	return migration.Migration{
-		ID:          "ai_003_create_cache_table",
-		Description: "Create ai_cache table for caching AI responses",
-		Up: func(db database.Database) error {
-			var query string
+func createAICacheTable() migrations.Migration {
+	return migrations.Migration{
+		Version: "20250101000003",
+		Name:    "create_ai_cache_table",
+		Source:  "ai",
+		Executor: &dynamicSQLExecutor{
+			upFunc: func(ctx context.Context, db database.Database) error {
+				var query string
 
-			switch db.Type() {
-			case "postgres":
-				query = `
+				switch db.DriverName() {
+				case "postgres":
+					query = `
 					CREATE TABLE IF NOT EXISTS ai_cache (
 						id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 						cache_key VARCHAR(64) NOT NULL UNIQUE,
@@ -227,8 +247,8 @@ func createAICacheTable() migration.Migration {
 					CREATE INDEX IF NOT EXISTS idx_ai_cache_cache_key ON ai_cache(cache_key);
 					CREATE INDEX IF NOT EXISTS idx_ai_cache_expires_at ON ai_cache(expires_at);
 				`
-			case "mysql":
-				query = `
+				case "mysql":
+					query = `
 					CREATE TABLE IF NOT EXISTS ai_cache (
 						id CHAR(36) PRIMARY KEY,
 						cache_key VARCHAR(64) NOT NULL UNIQUE,
@@ -247,8 +267,8 @@ func createAICacheTable() migration.Migration {
 						INDEX idx_ai_cache_expires_at (expires_at)
 					);
 				`
-			case "sqlite":
-				query = `
+				case "sqlite":
+					query = `
 					CREATE TABLE IF NOT EXISTS ai_cache (
 						id TEXT PRIMARY KEY,
 						cache_key TEXT NOT NULL UNIQUE,
@@ -267,29 +287,34 @@ func createAICacheTable() migration.Migration {
 					CREATE INDEX IF NOT EXISTS idx_ai_cache_cache_key ON ai_cache(cache_key);
 					CREATE INDEX IF NOT EXISTS idx_ai_cache_expires_at ON ai_cache(expires_at);
 				`
-			}
+				default:
+					return fmt.Errorf("unsupported database driver: %s", db.DriverName())
+				}
 
-			_, err := db.Exec(query)
-			return err
-		},
-		Down: func(db database.Database) error {
-			_, err := db.Exec("DROP TABLE IF EXISTS ai_cache")
-			return err
+				_, err := db.Exec(ctx, query)
+				return err
+			},
+			downFunc: func(ctx context.Context, db database.Database) error {
+				_, err := db.Exec(ctx, "DROP TABLE IF EXISTS ai_cache")
+				return err
+			},
 		},
 	}
 }
 
 // createAIQuotasTable creates the ai_quotas table
-func createAIQuotasTable() migration.Migration {
-	return migration.Migration{
-		ID:          "ai_004_create_quotas_table",
-		Description: "Create ai_quotas table for user quota tracking",
-		Up: func(db database.Database) error {
-			var query string
+func createAIQuotasTable() migrations.Migration {
+	return migrations.Migration{
+		Version: "20250101000004",
+		Name:    "create_ai_quotas_table",
+		Source:  "ai",
+		Executor: &dynamicSQLExecutor{
+			upFunc: func(ctx context.Context, db database.Database) error {
+				var query string
 
-			switch db.Type() {
-			case "postgres":
-				query = `
+				switch db.DriverName() {
+				case "postgres":
+					query = `
 					CREATE TABLE IF NOT EXISTS ai_quotas (
 						id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 						user_id UUID NOT NULL UNIQUE,
@@ -308,8 +333,8 @@ func createAIQuotasTable() migration.Migration {
 					);
 					CREATE INDEX IF NOT EXISTS idx_ai_quotas_user_id ON ai_quotas(user_id);
 				`
-			case "mysql":
-				query = `
+				case "mysql":
+					query = `
 					CREATE TABLE IF NOT EXISTS ai_quotas (
 						id CHAR(36) PRIMARY KEY,
 						user_id CHAR(36) NOT NULL UNIQUE,
@@ -328,8 +353,8 @@ func createAIQuotasTable() migration.Migration {
 						INDEX idx_ai_quotas_user_id (user_id)
 					);
 				`
-			case "sqlite":
-				query = `
+				case "sqlite":
+					query = `
 					CREATE TABLE IF NOT EXISTS ai_quotas (
 						id TEXT PRIMARY KEY,
 						user_id TEXT NOT NULL UNIQUE,
@@ -348,14 +373,37 @@ func createAIQuotasTable() migration.Migration {
 					);
 					CREATE INDEX IF NOT EXISTS idx_ai_quotas_user_id ON ai_quotas(user_id);
 				`
-			}
+				default:
+					return fmt.Errorf("unsupported database driver: %s", db.DriverName())
+				}
 
-			_, err := db.Exec(query)
-			return err
-		},
-		Down: func(db database.Database) error {
-			_, err := db.Exec("DROP TABLE IF EXISTS ai_quotas")
-			return err
+				_, err := db.Exec(ctx, query)
+				return err
+			},
+			downFunc: func(ctx context.Context, db database.Database) error {
+				_, err := db.Exec(ctx, "DROP TABLE IF EXISTS ai_quotas")
+				return err
+			},
 		},
 	}
+}
+
+// dynamicSQLExecutor implements MigrationExecutor using function callbacks
+type dynamicSQLExecutor struct {
+	upFunc   func(ctx context.Context, db database.Database) error
+	downFunc func(ctx context.Context, db database.Database) error
+}
+
+func (e *dynamicSQLExecutor) Up(ctx context.Context, db database.Database) error {
+	return e.upFunc(ctx, db)
+}
+
+func (e *dynamicSQLExecutor) Down(ctx context.Context, db database.Database) error {
+	return e.downFunc(ctx, db)
+}
+
+func (e *dynamicSQLExecutor) Checksum() string {
+	// For dynamic executors, we'll return empty checksum
+	// The migrations package will handle checksum calculation
+	return ""
 }

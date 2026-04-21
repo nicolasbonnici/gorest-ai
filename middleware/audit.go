@@ -39,18 +39,22 @@ func AuditMiddleware(config AuditConfig) fiber.Handler {
 		userID := c.Locals("userID")
 
 		// Log request
-		logFields := map[string]interface{}{
-			"method":  method,
-			"path":    path,
-			"ip":      ip,
-			"user_id": userID,
-		}
-
 		if config.IncludeRequestBody {
-			logFields["body"] = string(c.Body())
+			logger.Log.Info("AI API request",
+				"method", method,
+				"path", path,
+				"ip", ip,
+				"user_id", userID,
+				"body", string(c.Body()),
+			)
+		} else {
+			logger.Log.Info("AI API request",
+				"method", method,
+				"path", path,
+				"ip", ip,
+				"user_id", userID,
+			)
 		}
-
-		logger.Log.Info("AI API request", logFields)
 
 		// Execute request
 		err := c.Next()
@@ -59,24 +63,53 @@ func AuditMiddleware(config AuditConfig) fiber.Handler {
 		duration := time.Since(start)
 
 		// Log response
-		responseFields := map[string]interface{}{
-			"method":   method,
-			"path":     path,
-			"ip":       ip,
-			"user_id":  userID,
-			"status":   c.Response().StatusCode(),
-			"duration": duration.Milliseconds(),
-		}
-
-		if config.IncludeResponseBody {
-			responseFields["response"] = string(c.Response().Body())
-		}
+		statusCode := c.Response().StatusCode()
+		durationMs := duration.Milliseconds()
 
 		if err != nil {
-			responseFields["error"] = err.Error()
-			logger.Log.Error("AI API request failed", responseFields)
+			if config.IncludeResponseBody {
+				logger.Log.Error("AI API request failed",
+					"method", method,
+					"path", path,
+					"ip", ip,
+					"user_id", userID,
+					"status", statusCode,
+					"duration", durationMs,
+					"response", string(c.Response().Body()),
+					"error", err.Error(),
+				)
+			} else {
+				logger.Log.Error("AI API request failed",
+					"method", method,
+					"path", path,
+					"ip", ip,
+					"user_id", userID,
+					"status", statusCode,
+					"duration", durationMs,
+					"error", err.Error(),
+				)
+			}
 		} else {
-			logger.Log.Info("AI API request completed", responseFields)
+			if config.IncludeResponseBody {
+				logger.Log.Info("AI API request completed",
+					"method", method,
+					"path", path,
+					"ip", ip,
+					"user_id", userID,
+					"status", statusCode,
+					"duration", durationMs,
+					"response", string(c.Response().Body()),
+				)
+			} else {
+				logger.Log.Info("AI API request completed",
+					"method", method,
+					"path", path,
+					"ip", ip,
+					"user_id", userID,
+					"status", statusCode,
+					"duration", durationMs,
+				)
+			}
 		}
 
 		return err

@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -87,7 +86,7 @@ func (s *Service) Chat(ctx context.Context, req *ChatRequestDTO, userID *uuid.UU
 	s.recordSuccessfulRequest(ctx, providerName, req, response, userID, duration, cost)
 
 	if s.config.EnableQuota && userID != nil {
-		s.updateQuota(ctx, *userID, response.TotalTokens)
+		_ = s.updateQuota(ctx, *userID, response.TotalTokens)
 	}
 
 	return result, nil
@@ -237,7 +236,7 @@ func (s *Service) storeCacheInDB(ctx context.Context, cacheKey string, response 
 		prompt_tokens, completion_tokens, total_tokens, hit_count, expires_at, created_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`
 
-	_, _ = s.db.Exec(query, cacheEntry.ID, cacheEntry.CacheKey, cacheEntry.ProviderName,
+	_, _ = s.db.Exec(ctx, query, cacheEntry.ID.String(), cacheEntry.CacheKey, cacheEntry.ProviderName,
 		cacheEntry.Model, cacheEntry.RequestType, cacheEntry.ResponseText,
 		cacheEntry.PromptTokens, cacheEntry.CompletionTokens, cacheEntry.TotalTokens,
 		cacheEntry.HitCount, cacheEntry.ExpiresAt, cacheEntry.CreatedAt)
@@ -245,11 +244,11 @@ func (s *Service) storeCacheInDB(ctx context.Context, cacheKey string, response 
 
 func (s *Service) recordCacheHit(ctx context.Context, cacheKey string, userID *uuid.UUID) {
 	if s.cache != nil {
-		s.cache.IncrementHit(ctx, cacheKey)
+		_ = s.cache.IncrementHit(ctx, cacheKey)
 	}
 
 	query := `UPDATE ai_cache SET hit_count = hit_count + 1, updated_at = $1 WHERE cache_key = $2`
-	s.db.Exec(query, time.Now(), cacheKey)
+	_, _ = s.db.Exec(ctx, query, time.Now(), cacheKey)
 }
 
 func (s *Service) calculateCost(providerName string, totalTokens int) float64 {
@@ -306,7 +305,12 @@ func (s *Service) recordSuccessfulRequest(ctx context.Context, providerName stri
 		status, cached, created_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`
 
-	_, _ = s.db.Exec(query, request.ID, request.UserID, request.ProviderID, request.ProviderName,
+	userIDStr := ""
+	if request.UserID != nil {
+		userIDStr = request.UserID.String()
+	}
+
+	_, _ = s.db.Exec(ctx, query, request.ID.String(), userIDStr, request.ProviderID.String(), request.ProviderName,
 		request.Model, request.RequestType, request.Prompt, request.ResponseText,
 		request.PromptTokens, request.CompletionTokens, request.TotalTokens,
 		request.Cost, request.DurationMs, request.Status, request.Cached, request.CreatedAt)
@@ -342,7 +346,12 @@ func (s *Service) recordFailedRequest(ctx context.Context, providerName string, 
 		prompt, status, error_message, duration_ms, created_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`
 
-	_, _ = s.db.Exec(query, request.ID, request.UserID, request.ProviderID, request.ProviderName,
+	userIDStr := ""
+	if request.UserID != nil {
+		userIDStr = request.UserID.String()
+	}
+
+	_, _ = s.db.Exec(ctx, query, request.ID.String(), userIDStr, request.ProviderID.String(), request.ProviderName,
 		request.Model, request.RequestType, request.Prompt, request.Status,
 		request.ErrorMessage, request.DurationMs, request.CreatedAt)
 }

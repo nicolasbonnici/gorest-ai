@@ -1,5 +1,9 @@
 package ai
 
+// Hook functionality is temporarily disabled pending migration to new hooks API
+// The hooks API in gorest v0.5.0 has changed to a generic interface-based system
+
+/*
 import (
 	"fmt"
 
@@ -169,3 +173,4 @@ func validateQuotaBeforeCreate(data interface{}) error {
 func validateQuotaBeforeUpdate(data interface{}) error {
 	return validateQuotaBeforeCreate(data)
 }
+*/
