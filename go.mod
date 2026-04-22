@@ -7,7 +7,7 @@ toolchain go1.26.2
 require (
 	github.com/gofiber/fiber/v2 v2.52.12
 	github.com/google/uuid v1.6.0
-	github.com/nicolasbonnici/gorest v0.5.1
+	github.com/nicolasbonnici/gorest v0.5.2
 	github.com/stretchr/testify v1.11.1
 )
 
