@@ -280,10 +280,10 @@ func (s *Service) recordSuccessfulRequest(ctx context.Context, providerName stri
 	}
 
 	request := &AIRequest{
-		ID:           uuid.New(),
-		UserID:       userID,
-		ProviderID:   uuid.New(),
-		ProviderName: providerName,
+		ID:               uuid.New(),
+		UserID:           userID,
+		ProviderID:       uuid.New(),
+		ProviderName:     providerName,
 		Model:            response.Model,
 		RequestType:      "chat",
 		Prompt:           prompt,
@@ -294,10 +294,10 @@ func (s *Service) recordSuccessfulRequest(ctx context.Context, providerName stri
 		Cost:             cost,
 		DurationMs:       durationMs,
 		Status:           "success",
-		ErrorMessage: nil,
-		Cached:       false,
-		IPAddress:    nil,
-		CreatedAt:    time.Now(),
+		ErrorMessage:     nil,
+		Cached:           false,
+		IPAddress:        nil,
+		CreatedAt:        time.Now(),
 	}
 
 	query := `INSERT INTO ai_requests (id, user_id, provider_id, provider_name, model, request_type,

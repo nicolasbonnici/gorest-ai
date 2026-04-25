@@ -116,7 +116,7 @@ func (p *Plugin) parseConfig(config map[string]interface{}) error {
 		p.config.EnableQuota = v
 	}
 
-	if v, ok := config["max_tokens"].(int); ok{
+	if v, ok := config["max_tokens"].(int); ok {
 		p.config.MaxTokens = v
 	}
 	if v, ok := config["default_temperature"].(float64); ok {

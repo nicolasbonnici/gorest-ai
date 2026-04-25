@@ -6,14 +6,14 @@ import (
 
 // GeminiRequest represents a request to the Gemini API
 type GeminiRequest struct {
-	Contents         []GeminiContent        `json:"contents"`
+	Contents         []GeminiContent         `json:"contents"`
 	GenerationConfig *GeminiGenerationConfig `json:"generationConfig,omitempty"`
 }
 
 // GeminiContent represents content in Gemini format
 type GeminiContent struct {
-	Role  string        `json:"role"`  // "user" or "model"
-	Parts []GeminiPart  `json:"parts"`
+	Role  string       `json:"role"` // "user" or "model"
+	Parts []GeminiPart `json:"parts"`
 }
 
 // GeminiPart represents a part of the content
@@ -31,8 +31,8 @@ type GeminiGenerationConfig struct {
 
 // GeminiResponse represents a response from the Gemini API
 type GeminiResponse struct {
-	Candidates     []GeminiCandidate    `json:"candidates"`
-	UsageMetadata  *GeminiUsageMetadata `json:"usageMetadata,omitempty"`
+	Candidates    []GeminiCandidate    `json:"candidates"`
+	UsageMetadata *GeminiUsageMetadata `json:"usageMetadata,omitempty"`
 }
 
 // GeminiCandidate represents a candidate response

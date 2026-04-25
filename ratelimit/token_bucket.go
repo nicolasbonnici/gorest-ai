@@ -16,9 +16,9 @@ type TokenBucket struct {
 
 // bucket represents a token bucket for a single key
 type bucket struct {
-	tokens    int
+	tokens     int
 	lastRefill time.Time
-	mu        sync.Mutex
+	mu         sync.Mutex
 }
 
 // NewTokenBucket creates a new token bucket rate limiter
@@ -130,7 +130,7 @@ func (tb *TokenBucket) getBucket(key string) *bucket {
 	}
 
 	b = &bucket{
-		tokens:    tb.config.Burst,
+		tokens:     tb.config.Burst,
 		lastRefill: time.Now(),
 	}
 	tb.buckets[key] = b
@@ -149,7 +149,7 @@ func (tb *TokenBucket) refillBucket(b *bucket) {
 	}
 
 	// Calculate tokens to add based on elapsed time
-	tokensToAdd := int(elapsed / tb.config.Per) * tb.config.Rate
+	tokensToAdd := int(elapsed/tb.config.Per) * tb.config.Rate
 
 	if tokensToAdd > 0 {
 		b.tokens += tokensToAdd

@@ -6,30 +6,30 @@ import (
 
 // AnthropicRequest represents a request to the Anthropic API
 type AnthropicRequest struct {
-	Model       string              `json:"model"`
-	Messages    []AnthropicMessage  `json:"messages"`
-	MaxTokens   int                 `json:"max_tokens"`
-	Temperature float64             `json:"temperature,omitempty"`
-	Stream      bool                `json:"stream,omitempty"`
-	System      string              `json:"system,omitempty"`
+	Model       string             `json:"model"`
+	Messages    []AnthropicMessage `json:"messages"`
+	MaxTokens   int                `json:"max_tokens"`
+	Temperature float64            `json:"temperature,omitempty"`
+	Stream      bool               `json:"stream,omitempty"`
+	System      string             `json:"system,omitempty"`
 }
 
 // AnthropicMessage represents a message in Anthropic format
 type AnthropicMessage struct {
-	Role    string `json:"role"`    // "user" or "assistant" (no system)
+	Role    string `json:"role"` // "user" or "assistant" (no system)
 	Content string `json:"content"`
 }
 
 // AnthropicResponse represents a response from the Anthropic API
 type AnthropicResponse struct {
-	ID           string                  `json:"id"`
-	Type         string                  `json:"type"`
-	Role         string                  `json:"role"`
-	Content      []AnthropicContent      `json:"content"`
-	Model        string                  `json:"model"`
-	StopReason   string                  `json:"stop_reason"`
-	StopSequence *string                 `json:"stop_sequence"`
-	Usage        AnthropicUsage          `json:"usage"`
+	ID           string             `json:"id"`
+	Type         string             `json:"type"`
+	Role         string             `json:"role"`
+	Content      []AnthropicContent `json:"content"`
+	Model        string             `json:"model"`
+	StopReason   string             `json:"stop_reason"`
+	StopSequence *string            `json:"stop_sequence"`
+	Usage        AnthropicUsage     `json:"usage"`
 }
 
 // AnthropicContent represents content in the response
@@ -46,11 +46,11 @@ type AnthropicUsage struct {
 
 // AnthropicStreamEvent represents a streaming event
 type AnthropicStreamEvent struct {
-	Type         string                  `json:"type"`
-	Message      *AnthropicResponse      `json:"message,omitempty"`
-	Index        int                     `json:"index,omitempty"`
-	Delta        *AnthropicDelta         `json:"delta,omitempty"`
-	Usage        *AnthropicUsage         `json:"usage,omitempty"`
+	Type    string             `json:"type"`
+	Message *AnthropicResponse `json:"message,omitempty"`
+	Index   int                `json:"index,omitempty"`
+	Delta   *AnthropicDelta    `json:"delta,omitempty"`
+	Usage   *AnthropicUsage    `json:"usage,omitempty"`
 }
 
 // AnthropicDelta represents a content delta in streaming

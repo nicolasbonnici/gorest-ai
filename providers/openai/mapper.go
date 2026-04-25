@@ -15,7 +15,7 @@ type OpenAIRequest struct {
 
 // OpenAIMessage represents a message in OpenAI format
 type OpenAIMessage struct {
-	Role    string `json:"role"`    // "system", "user", or "assistant"
+	Role    string `json:"role"` // "system", "user", or "assistant"
 	Content string `json:"content"`
 }
 

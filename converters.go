@@ -26,11 +26,11 @@ func ToProviderResponseDTO(provider *AIProvider) *ProviderResponseDTO {
 func ToProviderModel(dto *ProviderCreateDTO) *AIProvider {
 	now := time.Now()
 	return &AIProvider{
-		ID:          uuid.New(),
-		Name:        dto.Name,
-		DisplayName: dto.DisplayName,
-		APIKey:      dto.APIKey,
-		BaseURL:     dto.BaseURL,
+		ID:           uuid.New(),
+		Name:         dto.Name,
+		DisplayName:  dto.DisplayName,
+		APIKey:       dto.APIKey,
+		BaseURL:      dto.BaseURL,
 		Enabled:      dto.Enabled,
 		Priority:     dto.Priority,
 		MaxTokens:    dto.MaxTokens,

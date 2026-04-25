@@ -7,31 +7,31 @@ import (
 )
 
 type Config struct {
-	Database         database.Database `json:"-" yaml:"-"`
-	DefaultProvider  string            `json:"default_provider" yaml:"default_provider"`
-	EnabledProviders []string          `json:"enabled_providers" yaml:"enabled_providers"`
-	AnthropicAPIKey  string            `json:"anthropic_api_key" yaml:"anthropic_api_key"`
-	AnthropicBaseURL string `json:"anthropic_base_url" yaml:"anthropic_base_url"`
-	OpenAIAPIKey     string `json:"openai_api_key" yaml:"openai_api_key"`
-	OpenAIBaseURL    string `json:"openai_base_url" yaml:"openai_base_url"`
-	GeminiAPIKey     string `json:"gemini_api_key" yaml:"gemini_api_key"`
-	GeminiBaseURL    string `json:"gemini_base_url" yaml:"gemini_base_url"`
-	MistralAPIKey      string  `json:"mistral_api_key" yaml:"mistral_api_key"`
-	MistralBaseURL     string  `json:"mistral_base_url" yaml:"mistral_base_url"`
-	EnableCache        bool    `json:"enable_cache" yaml:"enable_cache"`
-	CacheTTL           int     `json:"cache_ttl" yaml:"cache_ttl"`
-	EnableFallback     bool    `json:"enable_fallback" yaml:"enable_fallback"`
-	EnableQuota        bool    `json:"enable_quota" yaml:"enable_quota"`
-	MaxTokens          int     `json:"max_tokens" yaml:"max_tokens"`
-	DefaultTemperature float64 `json:"default_temperature" yaml:"default_temperature"`
-	RateLimitPerMin    int     `json:"rate_limit_per_min" yaml:"rate_limit_per_min"`
-	RequestTimeout     int     `json:"request_timeout" yaml:"request_timeout"`
-	PaginationLimit    int     `json:"pagination_limit" yaml:"pagination_limit"`
-	MaxPaginationLimit int     `json:"max_pagination_limit" yaml:"max_pagination_limit"`
-	RequireAuth        bool    `json:"require_auth" yaml:"require_auth"`
-	AllowAnonymous     bool    `json:"allow_anonymous" yaml:"allow_anonymous"`
-	EnableAudit        bool    `json:"enable_audit" yaml:"enable_audit"`
-	RetainAuditDays    int     `json:"retain_audit_days" yaml:"retain_audit_days"`
+	Database           database.Database `json:"-" yaml:"-"`
+	DefaultProvider    string            `json:"default_provider" yaml:"default_provider"`
+	EnabledProviders   []string          `json:"enabled_providers" yaml:"enabled_providers"`
+	AnthropicAPIKey    string            `json:"anthropic_api_key" yaml:"anthropic_api_key"`
+	AnthropicBaseURL   string            `json:"anthropic_base_url" yaml:"anthropic_base_url"`
+	OpenAIAPIKey       string            `json:"openai_api_key" yaml:"openai_api_key"`
+	OpenAIBaseURL      string            `json:"openai_base_url" yaml:"openai_base_url"`
+	GeminiAPIKey       string            `json:"gemini_api_key" yaml:"gemini_api_key"`
+	GeminiBaseURL      string            `json:"gemini_base_url" yaml:"gemini_base_url"`
+	MistralAPIKey      string            `json:"mistral_api_key" yaml:"mistral_api_key"`
+	MistralBaseURL     string            `json:"mistral_base_url" yaml:"mistral_base_url"`
+	EnableCache        bool              `json:"enable_cache" yaml:"enable_cache"`
+	CacheTTL           int               `json:"cache_ttl" yaml:"cache_ttl"`
+	EnableFallback     bool              `json:"enable_fallback" yaml:"enable_fallback"`
+	EnableQuota        bool              `json:"enable_quota" yaml:"enable_quota"`
+	MaxTokens          int               `json:"max_tokens" yaml:"max_tokens"`
+	DefaultTemperature float64           `json:"default_temperature" yaml:"default_temperature"`
+	RateLimitPerMin    int               `json:"rate_limit_per_min" yaml:"rate_limit_per_min"`
+	RequestTimeout     int               `json:"request_timeout" yaml:"request_timeout"`
+	PaginationLimit    int               `json:"pagination_limit" yaml:"pagination_limit"`
+	MaxPaginationLimit int               `json:"max_pagination_limit" yaml:"max_pagination_limit"`
+	RequireAuth        bool              `json:"require_auth" yaml:"require_auth"`
+	AllowAnonymous     bool              `json:"allow_anonymous" yaml:"allow_anonymous"`
+	EnableAudit        bool              `json:"enable_audit" yaml:"enable_audit"`
+	RetainAuditDays    int               `json:"retain_audit_days" yaml:"retain_audit_days"`
 }
 
 func DefaultConfig() Config {

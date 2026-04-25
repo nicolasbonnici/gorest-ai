@@ -116,9 +116,9 @@ func TestAIQuotaNeedsReset(t *testing.T) {
 	now := time.Now()
 
 	tests := []struct {
-		name          string
-		quota         AIQuota
-		expectedDaily bool
+		name            string
+		quota           AIQuota
+		expectedDaily   bool
 		expectedMonthly bool
 	}{
 		{

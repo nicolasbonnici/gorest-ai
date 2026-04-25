@@ -70,10 +70,10 @@ func TestConfigValidate(t *testing.T) {
 		{
 			name: "Invalid temperature",
 			config: Config{
-				DefaultProvider:  "anthropic",
-				EnabledProviders: []string{"anthropic"},
-				AnthropicAPIKey:  "test-key",
-				MaxTokens:        100,
+				DefaultProvider:    "anthropic",
+				EnabledProviders:   []string{"anthropic"},
+				AnthropicAPIKey:    "test-key",
+				MaxTokens:          100,
 				DefaultTemperature: 3.0,
 			},
 			wantErr: true,

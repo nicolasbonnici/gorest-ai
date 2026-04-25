@@ -74,51 +74,51 @@ type ProviderResponseDTO struct {
 }
 
 type UsageStatsDTO struct {
-	TotalRequests     int     `json:"total_requests"`
-	SuccessfulRequests int    `json:"successful_requests"`
-	FailedRequests    int     `json:"failed_requests"`
-	CachedRequests    int     `json:"cached_requests"`
-	TotalTokens       int     `json:"total_tokens"`
-	PromptTokens      int     `json:"prompt_tokens"`
-	CompletionTokens  int     `json:"completion_tokens"`
-	TotalCost         float64 `json:"total_cost"`
-	AverageDuration   int     `json:"average_duration_ms"`
-	ProviderBreakdown map[string]ProviderUsageDTO `json:"provider_breakdown"`
+	TotalRequests      int                         `json:"total_requests"`
+	SuccessfulRequests int                         `json:"successful_requests"`
+	FailedRequests     int                         `json:"failed_requests"`
+	CachedRequests     int                         `json:"cached_requests"`
+	TotalTokens        int                         `json:"total_tokens"`
+	PromptTokens       int                         `json:"prompt_tokens"`
+	CompletionTokens   int                         `json:"completion_tokens"`
+	TotalCost          float64                     `json:"total_cost"`
+	AverageDuration    int                         `json:"average_duration_ms"`
+	ProviderBreakdown  map[string]ProviderUsageDTO `json:"provider_breakdown"`
 }
 
 type ProviderUsageDTO struct {
-	Provider     string  `json:"provider"`
-	Requests     int     `json:"requests"`
-	Tokens       int     `json:"tokens"`
-	Cost         float64 `json:"cost"`
-	AvgDuration  int     `json:"avg_duration_ms"`
+	Provider    string  `json:"provider"`
+	Requests    int     `json:"requests"`
+	Tokens      int     `json:"tokens"`
+	Cost        float64 `json:"cost"`
+	AvgDuration int     `json:"avg_duration_ms"`
 }
 
 type QuotaStatusDTO struct {
-	DailyLimit         int       `json:"daily_limit"`
-	MonthlyLimit       int       `json:"monthly_limit"`
-	DailyTokenLimit    int       `json:"daily_token_limit"`
-	MonthlyTokenLimit  int       `json:"monthly_token_limit"`
-	DailyUsed          int       `json:"daily_used"`
-	MonthlyUsed        int       `json:"monthly_used"`
-	DailyTokensUsed    int       `json:"daily_tokens_used"`
-	MonthlyTokensUsed  int       `json:"monthly_tokens_used"`
-	DailyRemaining     int       `json:"daily_remaining"`
-	MonthlyRemaining   int       `json:"monthly_remaining"`
-	DailyTokensRemaining    int  `json:"daily_tokens_remaining"`
-	MonthlyTokensRemaining  int  `json:"monthly_tokens_remaining"`
-	ResetDaily         time.Time `json:"reset_daily"`
-	ResetMonthly       time.Time `json:"reset_monthly"`
+	DailyLimit             int       `json:"daily_limit"`
+	MonthlyLimit           int       `json:"monthly_limit"`
+	DailyTokenLimit        int       `json:"daily_token_limit"`
+	MonthlyTokenLimit      int       `json:"monthly_token_limit"`
+	DailyUsed              int       `json:"daily_used"`
+	MonthlyUsed            int       `json:"monthly_used"`
+	DailyTokensUsed        int       `json:"daily_tokens_used"`
+	MonthlyTokensUsed      int       `json:"monthly_tokens_used"`
+	DailyRemaining         int       `json:"daily_remaining"`
+	MonthlyRemaining       int       `json:"monthly_remaining"`
+	DailyTokensRemaining   int       `json:"daily_tokens_remaining"`
+	MonthlyTokensRemaining int       `json:"monthly_tokens_remaining"`
+	ResetDaily             time.Time `json:"reset_daily"`
+	ResetMonthly           time.Time `json:"reset_monthly"`
 }
 
 type RequestFilterDTO struct {
-	UserID       *uuid.UUID `json:"user_id,omitempty"`
-	Provider     *string    `json:"provider,omitempty"`
-	Status       *string    `json:"status,omitempty" validate:"omitempty,oneof=success error cached"`
-	FromDate     *time.Time `json:"from_date,omitempty"`
-	ToDate       *time.Time `json:"to_date,omitempty"`
-	Limit        int        `json:"limit" validate:"omitempty,gt=0,lte=100"`
-	Offset       int        `json:"offset" validate:"omitempty,gte=0"`
+	UserID   *uuid.UUID `json:"user_id,omitempty"`
+	Provider *string    `json:"provider,omitempty"`
+	Status   *string    `json:"status,omitempty" validate:"omitempty,oneof=success error cached"`
+	FromDate *time.Time `json:"from_date,omitempty"`
+	ToDate   *time.Time `json:"to_date,omitempty"`
+	Limit    int        `json:"limit" validate:"omitempty,gt=0,lte=100"`
+	Offset   int        `json:"offset" validate:"omitempty,gte=0"`
 }
 
 type RequestResponseDTO struct {
@@ -144,9 +144,9 @@ type ErrorResponseDTO struct {
 }
 
 type PaginatedResponseDTO struct {
-	Data       interface{} `json:"data"`
-	Total      int         `json:"total"`
-	Limit      int         `json:"limit"`
-	Offset     int         `json:"offset"`
-	HasMore    bool        `json:"has_more"`
+	Data    interface{} `json:"data"`
+	Total   int         `json:"total"`
+	Limit   int         `json:"limit"`
+	Offset  int         `json:"offset"`
+	HasMore bool        `json:"has_more"`
 }
