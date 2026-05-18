@@ -3,8 +3,8 @@ module github.com/nicolasbonnici/gorest-ai/examples/basic
 go 1.26
 
 require (
-	github.com/nicolasbonnici/gorest v0.5.9
-	github.com/nicolasbonnici/gorest-ai v0.1.0
+	github.com/nicolasbonnici/gorest v0.5.11
+	github.com/nicolasbonnici/gorest-ai v0.1.10
 )
 
 require (
@@ -43,7 +43,7 @@ require (
 	modernc.org/libc v1.72.3 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
-	modernc.org/sqlite v1.50.0 // indirect
+	modernc.org/sqlite v1.50.1 // indirect
 )
 
 replace github.com/nicolasbonnici/gorest-ai => ../..
