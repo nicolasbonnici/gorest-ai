@@ -30,8 +30,10 @@ type Config struct {
 	MaxPaginationLimit int               `json:"max_pagination_limit" yaml:"max_pagination_limit"`
 	RequireAuth        bool              `json:"require_auth" yaml:"require_auth"`
 	AllowAnonymous     bool              `json:"allow_anonymous" yaml:"allow_anonymous"`
-	EnableAudit        bool              `json:"enable_audit" yaml:"enable_audit"`
-	RetainAuditDays    int               `json:"retain_audit_days" yaml:"retain_audit_days"`
+	EnableAudit          bool              `json:"enable_audit" yaml:"enable_audit"`
+	RetainAuditDays      int               `json:"retain_audit_days" yaml:"retain_audit_days"`
+	AutoTranslate        bool              `json:"auto_translate" yaml:"auto_translate"`
+	AllowedResourceTypes []string          `json:"allowed_resource_types" yaml:"allowed_resource_types"`
 }
 
 func DefaultConfig() Config {

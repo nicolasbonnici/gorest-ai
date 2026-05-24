@@ -10,14 +10,20 @@ import (
 
 	"github.com/nicolasbonnici/gorest-ai/migrations"
 	"github.com/nicolasbonnici/gorest-ai/providers"
+	"github.com/nicolasbonnici/gorest-ai/providers/anthropic"
+	"github.com/nicolasbonnici/gorest-ai/providers/gemini"
+	"github.com/nicolasbonnici/gorest-ai/providers/mistral"
+	"github.com/nicolasbonnici/gorest-ai/providers/openai"
 )
 
 type Plugin struct {
-	config   Config
-	db       database.Database
-	app      *fiber.App
-	registry *providers.ProviderRegistry
-	service  *Service
+	config         Config
+	db             database.Database
+	app            *fiber.App
+	registry       *providers.ProviderRegistry
+	service        *Service
+	localeProvider LocaleProvider
+	autoTranslator *AutoTranslator
 }
 
 func NewPlugin() plugin.Plugin {
@@ -62,6 +68,17 @@ func (p *Plugin) Initialize(config map[string]interface{}) error {
 	)
 
 	return nil
+}
+
+func (p *Plugin) SetLocaleProvider(lp LocaleProvider) {
+	p.localeProvider = lp
+	if p.config.AutoTranslate && p.service != nil {
+		p.autoTranslator = NewAutoTranslator(p.service, p.db, lp, &p.config)
+	}
+}
+
+func (p *Plugin) GetAutoTranslator() *AutoTranslator {
+	return p.autoTranslator
 }
 
 func (p *Plugin) parseConfig(config map[string]interface{}) error {
@@ -150,14 +167,47 @@ func (p *Plugin) parseConfig(config map[string]interface{}) error {
 		p.config.RetainAuditDays = v
 	}
 
+	if v, ok := config["auto_translate"].(bool); ok {
+		p.config.AutoTranslate = v
+	}
+	if v, ok := config["allowed_resource_types"].([]interface{}); ok {
+		types := make([]string, 0, len(v))
+		for _, t := range v {
+			if str, ok := t.(string); ok {
+				types = append(types, str)
+			}
+		}
+		p.config.AllowedResourceTypes = types
+	}
+
 	return nil
 }
 
 func (p *Plugin) initializeProviders() error {
-	logger.Log.Info("Provider initialization pending implementation",
-		"enabled_providers", p.config.EnabledProviders,
-	)
+	for _, name := range p.config.EnabledProviders {
+		apiKey := p.config.GetProviderAPIKey(name)
+		baseURL := p.config.GetProviderBaseURL(name)
 
+		var provider providers.Provider
+		switch name {
+		case "anthropic":
+			provider = anthropic.NewClient(apiKey, baseURL)
+		case "openai":
+			provider = openai.NewClient(apiKey, baseURL)
+		case "gemini":
+			provider = gemini.NewClient(apiKey, baseURL)
+		case "mistral":
+			provider = mistral.NewClient(apiKey, baseURL)
+		default:
+			continue
+		}
+
+		if err := p.registry.Register(provider); err != nil {
+			return fmt.Errorf("failed to register provider %s: %w", name, err)
+		}
+	}
+
+	logger.Log.Info("providers registered", "count", len(p.config.EnabledProviders))
 	return nil
 }
 
