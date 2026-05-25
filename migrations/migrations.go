@@ -480,7 +480,5 @@ func (e *dynamicSQLExecutor) Down(ctx context.Context, db database.Database) err
 }
 
 func (e *dynamicSQLExecutor) Checksum() string {
-	// For dynamic executors, we'll return empty checksum
-	// The migrations package will handle checksum calculation
 	return ""
 }

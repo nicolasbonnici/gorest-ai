@@ -1,4 +1,4 @@
-.PHONY: help test test-coverage lint fmt vet build clean example install-tools audit
+.PHONY: help test test-coverage lint lint-fix fmt vet build clean example install-tools audit
 
 # Default target
 help:
@@ -6,6 +6,7 @@ help:
 	@echo "  make test           - Run tests"
 	@echo "  make test-coverage  - Run tests with coverage"
 	@echo "  make lint           - Run linter"
+	@echo "  make lint-fix       - Fix auto-fixable lint issues and format code"
 	@echo "  make fmt            - Format code"
 	@echo "  make vet            - Run go vet"
 	@echo "  make build          - Build the plugin"
@@ -26,6 +27,11 @@ test-coverage:
 # Run linter
 lint:
 	golangci-lint run
+
+# Fix auto-fixable lint issues and format code
+lint-fix:
+	gofmt -s -w .
+	golangci-lint run --fix
 
 # Format code
 fmt:

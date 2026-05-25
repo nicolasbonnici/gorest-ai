@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/nicolasbonnici/gorest/database"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/nicolasbonnici/gorest/database"
 )
 
 // --- mocks ---
@@ -20,7 +20,7 @@ type mockLocaleProvider struct {
 	targetLocales []string
 }
 
-func (m *mockLocaleProvider) DefaultLocale() string  { return m.defaultLocale }
+func (m *mockLocaleProvider) DefaultLocale() string   { return m.defaultLocale }
 func (m *mockLocaleProvider) TargetLocales() []string { return m.targetLocales }
 
 type mockChatter struct {
@@ -85,13 +85,13 @@ func (m *mockDB) Query(_ context.Context, _ string, _ ...interface{}) (database.
 	panic("mockDB.Query not implemented")
 }
 func (m *mockDB) Connect(_ context.Context, _ string) error { panic("not implemented") }
-func (m *mockDB) Close() error                               { return nil }
-func (m *mockDB) Ping(_ context.Context) error               { return nil }
+func (m *mockDB) Close() error                              { return nil }
+func (m *mockDB) Ping(_ context.Context) error              { return nil }
 func (m *mockDB) Begin(_ context.Context) (database.Tx, error) {
 	panic("not implemented")
 }
-func (m *mockDB) Dialect() database.Dialect       { return nil }
-func (m *mockDB) DriverName() string              { return "postgres" }
+func (m *mockDB) Dialect() database.Dialect                 { return nil }
+func (m *mockDB) DriverName() string                        { return "postgres" }
 func (m *mockDB) Introspector() database.SchemaIntrospector { return nil }
 
 // --- helpers ---
