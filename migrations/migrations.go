@@ -20,6 +20,7 @@ func GetMigrations() []migrations.Migration {
 		createAIRequestsTable(),
 		createAICacheTable(),
 		createAIQuotasTable(),
+		createAITranslationLogTable(),
 	}
 }
 
@@ -388,6 +389,82 @@ func createAIQuotasTable() migrations.Migration {
 	}
 }
 
+func createAITranslationLogTable() migrations.Migration {
+	return migrations.Migration{
+		Version: "20260101000005",
+		Name:    "create_ai_translation_log_table",
+		Source:  "ai",
+		Executor: &dynamicSQLExecutor{
+			upFunc: func(ctx context.Context, db database.Database) error {
+				var query string
+
+				switch db.DriverName() {
+				case "postgres":
+					query = `
+					CREATE TABLE IF NOT EXISTS ai_translation_log (
+						id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+						translatable VARCHAR(255) NOT NULL,
+						translatable_id UUID NOT NULL,
+						source_locale VARCHAR(10) NOT NULL,
+						target_locale VARCHAR(10) NOT NULL,
+						source_hash VARCHAR(64) NOT NULL,
+						status VARCHAR(20) NOT NULL DEFAULT 'success',
+						error_message TEXT,
+						translated_at TIMESTAMP NOT NULL,
+						created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+						UNIQUE (translatable, translatable_id, source_locale, target_locale)
+					);
+					CREATE INDEX IF NOT EXISTS idx_ai_translation_log_resource ON ai_translation_log(translatable, translatable_id);
+				`
+				case "mysql":
+					query = `
+					CREATE TABLE IF NOT EXISTS ai_translation_log (
+						id CHAR(36) PRIMARY KEY,
+						translatable VARCHAR(255) NOT NULL,
+						translatable_id CHAR(36) NOT NULL,
+						source_locale VARCHAR(10) NOT NULL,
+						target_locale VARCHAR(10) NOT NULL,
+						source_hash VARCHAR(64) NOT NULL,
+						status VARCHAR(20) NOT NULL DEFAULT 'success',
+						error_message TEXT,
+						translated_at TIMESTAMP NOT NULL,
+						created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+						UNIQUE KEY unique_translation_log (translatable, translatable_id, source_locale, target_locale),
+						INDEX idx_ai_translation_log_resource (translatable, translatable_id)
+					) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+				`
+				case "sqlite":
+					query = `
+					CREATE TABLE IF NOT EXISTS ai_translation_log (
+						id TEXT PRIMARY KEY,
+						translatable TEXT NOT NULL,
+						translatable_id TEXT NOT NULL,
+						source_locale TEXT NOT NULL,
+						target_locale TEXT NOT NULL,
+						source_hash TEXT NOT NULL,
+						status TEXT NOT NULL DEFAULT 'success',
+						error_message TEXT,
+						translated_at TEXT NOT NULL,
+						created_at TEXT NOT NULL DEFAULT (datetime('now')),
+						UNIQUE (translatable, translatable_id, source_locale, target_locale)
+					);
+					CREATE INDEX IF NOT EXISTS idx_ai_translation_log_resource ON ai_translation_log(translatable, translatable_id);
+				`
+				default:
+					return fmt.Errorf("unsupported database driver: %s", db.DriverName())
+				}
+
+				_, err := db.Exec(ctx, query)
+				return err
+			},
+			downFunc: func(ctx context.Context, db database.Database) error {
+				_, err := db.Exec(ctx, "DROP TABLE IF EXISTS ai_translation_log")
+				return err
+			},
+		},
+	}
+}
+
 // dynamicSQLExecutor implements MigrationExecutor using function callbacks
 type dynamicSQLExecutor struct {
 	upFunc   func(ctx context.Context, db database.Database) error
@@ -403,7 +480,5 @@ func (e *dynamicSQLExecutor) Down(ctx context.Context, db database.Database) err
 }
 
 func (e *dynamicSQLExecutor) Checksum() string {
-	// For dynamic executors, we'll return empty checksum
-	// The migrations package will handle checksum calculation
 	return ""
 }

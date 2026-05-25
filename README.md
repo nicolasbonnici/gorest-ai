@@ -103,6 +103,65 @@ curl -X POST http://localhost:8000/api/ai/chat \
   }'
 ```
 
+## Auto-Translation
+
+The plugin can automatically translate content stored in `gorest-translatable`'s `translations` table whenever a resource is created or updated. It is fully generic — no field configuration needed. Any JSON object stored in the `content` column is translated key-by-key.
+
+### Setup
+
+1. Implement `LocaleProvider` (or use `TranslatableService` which already implements it):
+
+```go
+type LocaleProvider interface {
+    DefaultLocale() string   // source locale
+    TargetLocales() []string // locales to translate into
+}
+```
+
+2. In your application entry point, wire the translatable plugin as the locale provider:
+
+```go
+func registerRoutes(..., pluginRegistry *plugin.PluginRegistry) {
+    aiPlug, _ := pluginRegistry.Get("ai")
+    translatablePlug, _ := pluginRegistry.Get("translatable")
+
+    if ai, ok := aiPlug.(*aiplugin.Plugin); ok {
+        if tr, ok := translatablePlug.(*translatableplugin.TranslatablePlugin); ok {
+            ai.SetLocaleProvider(tr.GetService())
+        }
+    }
+}
+```
+
+3. Enable in `gorest.yaml`:
+
+```yaml
+- name: ai
+  config:
+    auto_translate: true
+    allowed_resource_types: [post]  # empty = all types
+```
+
+### How it works
+
+- On `POST /ai/translate/:resource/:resource_id`: reads the source locale translation, batches all target locales into one AI call, writes results back to the `translations` table.
+- Hash-based deduplication: if the source content hasn't changed since the last translation, that locale is skipped (`ai_translation_log` table).
+- Falls back to per-locale calls if the batch response is missing locales.
+- `TranslateAsync` fires a goroutine — safe to call from hooks.
+
+### HTTP Endpoint
+
+#### POST `/ai/translate/:resource/:resource_id`
+
+**Response:**
+```json
+{
+  "translated": ["fr", "es", "de"],
+  "skipped":    ["it"],
+  "failed":     []
+}
+```
+
 ## API Endpoints
 
 ### Chat Endpoints
