@@ -82,19 +82,25 @@ func (p *Plugin) GetAutoTranslator() *AutoTranslator {
 }
 
 func (p *Plugin) parseConfig(config map[string]interface{}) error {
+	p.parseProviderConfig(config)
+	p.parseFeatureConfig(config)
+	p.parseRequestConfig(config)
+	return nil
+}
+
+func (p *Plugin) parseProviderConfig(config map[string]interface{}) {
 	if v, ok := config["default_provider"].(string); ok {
 		p.config.DefaultProvider = v
 	}
 	if v, ok := config["enabled_providers"].([]interface{}); ok {
-		providers := make([]string, 0, len(v))
+		provs := make([]string, 0, len(v))
 		for _, provider := range v {
 			if str, ok := provider.(string); ok {
-				providers = append(providers, str)
+				provs = append(provs, str)
 			}
 		}
-		p.config.EnabledProviders = providers
+		p.config.EnabledProviders = provs
 	}
-
 	if v, ok := config["anthropic_api_key"].(string); ok {
 		p.config.AnthropicAPIKey = v
 	}
@@ -119,7 +125,9 @@ func (p *Plugin) parseConfig(config map[string]interface{}) error {
 	if v, ok := config["mistral_base_url"].(string); ok {
 		p.config.MistralBaseURL = v
 	}
+}
 
+func (p *Plugin) parseFeatureConfig(config map[string]interface{}) {
 	if v, ok := config["enable_cache"].(bool); ok {
 		p.config.EnableCache = v
 	}
@@ -132,7 +140,24 @@ func (p *Plugin) parseConfig(config map[string]interface{}) error {
 	if v, ok := config["enable_quota"].(bool); ok {
 		p.config.EnableQuota = v
 	}
+	if v, ok := config["require_auth"].(bool); ok {
+		p.config.RequireAuth = v
+	}
+	if v, ok := config["allow_anonymous"].(bool); ok {
+		p.config.AllowAnonymous = v
+	}
+	if v, ok := config["enable_audit"].(bool); ok {
+		p.config.EnableAudit = v
+	}
+	if v, ok := config["retain_audit_days"].(int); ok {
+		p.config.RetainAuditDays = v
+	}
+	if v, ok := config["auto_translate"].(bool); ok {
+		p.config.AutoTranslate = v
+	}
+}
 
+func (p *Plugin) parseRequestConfig(config map[string]interface{}) {
 	if v, ok := config["max_tokens"].(int); ok {
 		p.config.MaxTokens = v
 	}
@@ -145,30 +170,11 @@ func (p *Plugin) parseConfig(config map[string]interface{}) error {
 	if v, ok := config["request_timeout"].(int); ok {
 		p.config.RequestTimeout = v
 	}
-
 	if v, ok := config["pagination_limit"].(int); ok {
 		p.config.PaginationLimit = v
 	}
 	if v, ok := config["max_pagination_limit"].(int); ok {
 		p.config.MaxPaginationLimit = v
-	}
-
-	if v, ok := config["require_auth"].(bool); ok {
-		p.config.RequireAuth = v
-	}
-	if v, ok := config["allow_anonymous"].(bool); ok {
-		p.config.AllowAnonymous = v
-	}
-
-	if v, ok := config["enable_audit"].(bool); ok {
-		p.config.EnableAudit = v
-	}
-	if v, ok := config["retain_audit_days"].(int); ok {
-		p.config.RetainAuditDays = v
-	}
-
-	if v, ok := config["auto_translate"].(bool); ok {
-		p.config.AutoTranslate = v
 	}
 	if v, ok := config["allowed_resource_types"].([]interface{}); ok {
 		types := make([]string, 0, len(v))
@@ -179,8 +185,6 @@ func (p *Plugin) parseConfig(config map[string]interface{}) error {
 		}
 		p.config.AllowedResourceTypes = types
 	}
-
-	return nil
 }
 
 func (p *Plugin) initializeProviders() error {

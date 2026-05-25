@@ -104,7 +104,7 @@ audit: ## Run all Go Report Card quality checks (gofmt, vet, staticcheck, etc.)
 	@echo "✓ errcheck passed (or skipped)"
 	@echo ""
 	@echo "[7/7] Running gocyclo (threshold: 30)..."
-	@gocyclo_output=$$(gocyclo -over 30 . | grep -v 'vendor/' | grep -v 'generated/' | grep -v '_test.go' || true); \
+	@gocyclo_output=$$(gocyclo -over 30 . | grep -v 'vendor/' | grep -v 'generated/' | grep -v '_test\.go' || true); \
 	if [ -n "$$gocyclo_output" ]; then \
 		echo "❌ Functions with cyclomatic complexity > 30:"; \
 		echo "$$gocyclo_output"; \
