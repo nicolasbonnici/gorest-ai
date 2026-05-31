@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"github.com/google/uuid"
 )
 
@@ -14,12 +14,12 @@ type QuotaConfig struct {
 	QuotaChecker func(userID uuid.UUID) (bool, error)
 
 	// GetUserID extracts the user ID from the context
-	GetUserID func(c *fiber.Ctx) (*uuid.UUID, error)
+	GetUserID func(c fiber.Ctx) (*uuid.UUID, error)
 }
 
 // QuotaMiddleware creates a middleware for enforcing user quotas
 func QuotaMiddleware(config QuotaConfig) fiber.Handler {
-	return func(c *fiber.Ctx) error {
+	return func(c fiber.Ctx) error {
 		// Skip if not enabled
 		if !config.Enabled {
 			return c.Next()

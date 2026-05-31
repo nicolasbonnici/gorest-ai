@@ -3,7 +3,7 @@ package ai
 import (
 	"fmt"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"github.com/nicolasbonnici/gorest/database"
 	"github.com/nicolasbonnici/gorest/logger"
 	"github.com/nicolasbonnici/gorest/plugin"
@@ -224,7 +224,7 @@ func (p *Plugin) MigrationDependencies() []string {
 }
 
 func (p *Plugin) Handler() fiber.Handler {
-	return func(c *fiber.Ctx) error {
+	return func(c fiber.Ctx) error {
 		return c.Next()
 	}
 }

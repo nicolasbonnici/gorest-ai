@@ -3,7 +3,7 @@ package middleware
 import (
 	"time"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"github.com/nicolasbonnici/gorest/logger"
 )
 
@@ -21,7 +21,7 @@ type AuditConfig struct {
 
 // AuditMiddleware creates a middleware for audit logging
 func AuditMiddleware(config AuditConfig) fiber.Handler {
-	return func(c *fiber.Ctx) error {
+	return func(c fiber.Ctx) error {
 		// Skip if not enabled
 		if !config.Enabled {
 			return c.Next()
