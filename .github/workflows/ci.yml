@@ -147,6 +147,7 @@ jobs:
     - name: Build example
       run: |
         cd examples/basic
+        go mod tidy
         go build -v ./...
 
     - name: Cleanup
