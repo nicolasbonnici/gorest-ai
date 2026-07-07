@@ -39,14 +39,10 @@ func (c *MemoryCache) Get(ctx context.Context, key string) (interface{}, bool, e
 		return nil, false, nil
 	}
 
-	// Check if expired
+	// Reclamation of the expired entry is left to the janitor: spawning a
+	// goroutine that grabs the write lock on every expired read is far more
+	// expensive than the stale map slot it removes.
 	if entry.IsExpired() {
-		// Remove expired entry (needs write lock, so do it later)
-		go func() {
-			c.mu.Lock()
-			defer c.mu.Unlock()
-			delete(c.data, key)
-		}()
 		return nil, false, nil
 	}
 

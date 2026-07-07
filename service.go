@@ -38,8 +38,10 @@ func NewService(config *Config, registry *providers.ProviderRegistry, db databas
 func (s *Service) Chat(ctx context.Context, req *ChatRequestDTO, userID *uuid.UUID) (*ChatResponseDTO, error) {
 	startTime := time.Now()
 
-	if s.config.EnableCache && req.UseCache {
-		cacheKey := s.generateCacheKey(req)
+	cacheEnabled := s.config.EnableCache && req.UseCache
+	var cacheKey string
+	if cacheEnabled {
+		cacheKey = s.generateCacheKey(req)
 		if cached, found, err := s.checkCache(ctx, cacheKey); err == nil && found {
 			s.recordCacheHit(ctx, cacheKey, userID)
 			return cached, nil
@@ -78,8 +80,7 @@ func (s *Service) Chat(ctx context.Context, req *ChatRequestDTO, userID *uuid.UU
 		CreatedAt:        time.Now(),
 	}
 
-	if s.config.EnableCache && req.UseCache {
-		cacheKey := s.generateCacheKey(req)
+	if cacheEnabled {
 		s.storeInCache(ctx, cacheKey, result, req)
 	}
 

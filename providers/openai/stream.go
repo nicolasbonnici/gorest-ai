@@ -13,7 +13,10 @@ import (
 // processStream processes the SSE stream from OpenAI API
 func processStream(reader io.Reader, chunkChan chan<- providers.StreamChunk) error {
 	scanner := bufio.NewScanner(reader)
-	fullContent := ""
+	// Only the streamed content length is needed (for token estimation), so
+	// track bytes rather than concatenating the whole body — the latter is
+	// quadratic over the number of deltas.
+	var completionLen int
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -57,7 +60,7 @@ func processStream(reader io.Reader, chunkChan chan<- providers.StreamChunk) err
 		if len(chunk.Choices) > 0 {
 			delta := chunk.Choices[0].Delta.Content
 			if delta != "" {
-				fullContent += delta
+				completionLen += len(delta)
 				chunkChan <- providers.StreamChunk{
 					Delta: delta,
 					Done:  false,
@@ -70,8 +73,7 @@ func processStream(reader io.Reader, chunkChan chan<- providers.StreamChunk) err
 					Delta: "",
 					Done:  true,
 					Metrics: &providers.TokenMetrics{
-						// Estimate token count from full content
-						CompletionTokens: len(fullContent) / 4,
+						CompletionTokens: completionLen / 4,
 					},
 				}
 			}

@@ -13,7 +13,10 @@ import (
 // processStream processes the SSE stream from Mistral API
 func processStream(reader io.Reader, chunkChan chan<- providers.StreamChunk) error {
 	scanner := bufio.NewScanner(reader)
-	fullContent := ""
+	// Only the streamed content length is needed (for token estimation), so
+	// track bytes rather than concatenating the whole body — the latter is
+	// quadratic over the number of deltas.
+	var completionLen int
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -37,9 +40,8 @@ func processStream(reader io.Reader, chunkChan chan<- providers.StreamChunk) err
 				Delta: "",
 				Done:  true,
 				Metrics: &providers.TokenMetrics{
-					// Mistral doesn't provide token metrics in streaming mode
-					// Estimate from content
-					CompletionTokens: len(fullContent) / 4,
+					// Mistral doesn't provide token metrics in streaming mode; estimate from content.
+					CompletionTokens: completionLen / 4,
 				},
 			}
 			break
@@ -55,7 +57,7 @@ func processStream(reader io.Reader, chunkChan chan<- providers.StreamChunk) err
 		if len(chunk.Choices) > 0 {
 			delta := chunk.Choices[0].Delta.Content
 			if delta != "" {
-				fullContent += delta
+				completionLen += len(delta)
 				chunkChan <- providers.StreamChunk{
 					Delta: delta,
 					Done:  false,
@@ -68,7 +70,7 @@ func processStream(reader io.Reader, chunkChan chan<- providers.StreamChunk) err
 					Delta: "",
 					Done:  true,
 					Metrics: &providers.TokenMetrics{
-						CompletionTokens: len(fullContent) / 4,
+						CompletionTokens: completionLen / 4,
 					},
 				}
 			}

@@ -1,9 +1,7 @@
 package mistral
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -28,9 +26,7 @@ func NewClient(apiKey, baseURL string) *Client {
 	return &Client{
 		apiKey:  apiKey,
 		baseURL: baseURL,
-		client: &http.Client{
-			Timeout: 60 * time.Second,
-		},
+		client:  providers.NewHTTPClient(60 * time.Second),
 	}
 }
 
@@ -41,50 +37,38 @@ func (c *Client) Name() string {
 
 // Chat sends a chat completion request to Mistral
 func (c *Client) Chat(ctx context.Context, req *providers.ChatRequest) (*providers.ChatResponse, error) {
-	// Map to Mistral API format
 	apiReq := mapChatRequest(req)
 
-	// Marshal request
-	body, err := json.Marshal(apiReq)
+	body, release, err := providers.EncodeJSON(apiReq)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal request: %w", err)
 	}
+	defer release()
 
-	// Create HTTP request
-	httpReq, err := http.NewRequestWithContext(ctx, "POST", c.baseURL+"/v1/chat/completions", bytes.NewReader(body))
+	httpReq, err := http.NewRequestWithContext(ctx, "POST", c.baseURL+"/v1/chat/completions", body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 
-	// Set headers
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Authorization", "Bearer "+c.apiKey)
 
-	// Execute request
 	resp, err := c.client.Do(httpReq)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute request: %w", err)
 	}
 	defer resp.Body.Close()
 
-	// Read response
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read response: %w", err)
-	}
-
-	// Check status code
 	if resp.StatusCode != http.StatusOK {
+		respBody, _ := io.ReadAll(resp.Body)
 		return nil, fmt.Errorf("API error (status %d): %s", resp.StatusCode, string(respBody))
 	}
 
-	// Unmarshal response
 	var apiResp MistralResponse
-	if err := json.Unmarshal(respBody, &apiResp); err != nil {
+	if err := providers.DecodeJSONResponse(resp.Body, &apiResp); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
 	}
 
-	// Map to common response format
 	return mapChatResponse(&apiResp), nil
 }
 
@@ -97,30 +81,27 @@ func (c *Client) ChatStream(ctx context.Context, req *providers.ChatRequest) (<-
 		defer close(chunkChan)
 		defer close(errChan)
 
-		// Map to Mistral API format
 		apiReq := mapChatRequest(req)
 		apiReq.Stream = true
 
-		// Marshal request
-		body, err := json.Marshal(apiReq)
+		body, release, err := providers.EncodeJSON(apiReq)
 		if err != nil {
 			errChan <- fmt.Errorf("failed to marshal request: %w", err)
 			return
 		}
 
-		// Create HTTP request
-		httpReq, err := http.NewRequestWithContext(ctx, "POST", c.baseURL+"/v1/chat/completions", bytes.NewReader(body))
+		httpReq, err := http.NewRequestWithContext(ctx, "POST", c.baseURL+"/v1/chat/completions", body)
 		if err != nil {
+			release()
 			errChan <- fmt.Errorf("failed to create request: %w", err)
 			return
 		}
 
-		// Set headers
 		httpReq.Header.Set("Content-Type", "application/json")
 		httpReq.Header.Set("Authorization", "Bearer "+c.apiKey)
 
-		// Execute request
 		resp, err := c.client.Do(httpReq)
+		release()
 		if err != nil {
 			errChan <- fmt.Errorf("failed to execute request: %w", err)
 			return
