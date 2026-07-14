@@ -14,8 +14,8 @@ require (
 require (
 	github.com/andybalholm/brotli v1.2.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/gofiber/schema v1.8.1 // indirect
-	github.com/gofiber/utils/v2 v2.1.1 // indirect
+	github.com/gofiber/schema v1.8.2 // indirect
+	github.com/gofiber/utils/v2 v2.1.2 // indirect
 	github.com/klauspost/compress v1.19.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/mattn/go-colorable v0.1.15 // indirect
@@ -26,11 +26,7 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.72.0 // indirect
 	golang.org/x/crypto v0.54.0 // indirect
-<<<<<<< Updated upstream
-	golang.org/x/net v0.56.0 // indirect
-=======
 	golang.org/x/net v0.57.0 // indirect
->>>>>>> Stashed changes
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/text v0.40.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
