@@ -1,5 +1,10 @@
 # GoREST AI Plugin
 
+[![CI](https://github.com/nicolasbonnici/gorest-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/nicolasbonnici/gorest-ai/actions/workflows/ci.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/nicolasbonnici/gorest-ai.svg)](https://pkg.go.dev/github.com/nicolasbonnici/gorest-ai)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/nicolasbonnici/gorest-ai)](https://github.com/nicolasbonnici/gorest-ai/blob/HEAD/go.mod)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Production-ready AI API abstraction layer plugin for [GoREST](https://github.com/nicolasbonnici/gorest) with unified support for multiple AI providers.
 
 ## Features
