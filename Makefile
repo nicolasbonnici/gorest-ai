@@ -1,11 +1,12 @@
 .PHONY: help test test-coverage lint lint-fix fmt vet build clean example install-tools
+GOLANGCI_LINT_VERSION := v2.12.2
 
 # Default target
 help:
 	@echo "Available targets:"
 	@echo "  make test           - Run tests"
 	@echo "  make test-coverage  - Run tests with coverage"
-	@echo "  make lint           - Run all quality checks (gofmt, vet, staticcheck, misspell, gocyclo, errcheck)"
+	@echo "  make lint           - Run golangci-lint (bundles staticcheck, errcheck, govet, gocyclo, misspell)"
 	@echo "  make lint-fix       - Fix auto-fixable lint issues and format code"
 	@echo "  make fmt            - Format code"
 	@echo "  make vet            - Run go vet"
@@ -56,12 +57,10 @@ example:
 
 # Install development tools
 install-tools:
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-	go install honnef.co/go/tools/cmd/staticcheck@latest
-	go install github.com/gordonklaus/ineffassign@latest
-	go install github.com/client9/misspell/cmd/misspell@latest
-	go install github.com/kisielk/errcheck@latest
-	go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
+	@if ! golangci-lint --version 2>/dev/null | grep -qE 'version v?2\.'; then \
+		echo "  Installing golangci-lint $(GOLANGCI_LINT_VERSION)..."; \
+		GOWORK=off go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION); \
+	fi
 
 # Add Go bin to PATH
 GOPATH ?= $(shell go env GOPATH)
