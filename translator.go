@@ -113,8 +113,16 @@ func (t *AutoTranslator) Translate(ctx context.Context, resourceType, resourceID
 }
 
 func (t *AutoTranslator) TranslateAsync(ctx context.Context, resourceType, resourceID string, userID *uuid.UUID) {
+	// Outliving the request is the point, so cancellation is dropped while the
+	// request's values (request id, tracing) are kept for the logs. The ceiling
+	// covers the DB upserts too; the chat call carries its own RequestTimeout.
+	asyncCtx, cancel := context.WithTimeout(
+		context.WithoutCancel(ctx),
+		time.Duration(t.config.RequestTimeout)*2*time.Second,
+	)
 	go func() {
-		_, _ = t.Translate(context.Background(), resourceType, resourceID, userID)
+		defer cancel()
+		_, _ = t.Translate(asyncCtx, resourceType, resourceID, userID)
 	}()
 }
 
