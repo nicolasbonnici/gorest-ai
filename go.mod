@@ -7,13 +7,13 @@ toolchain go1.26.10
 require (
 	github.com/gofiber/fiber/v3 v3.6.1
 	github.com/google/uuid v1.6.0
-	github.com/nicolasbonnici/gorest v0.7.5
+	github.com/nicolasbonnici/gorest v0.7.6
 	github.com/stretchr/testify v1.12.1
 )
 
 require (
 	github.com/gofiber/schema v1.9.0 // indirect
-	github.com/gofiber/utils/v2 v2.6.2 // indirect
+	github.com/gofiber/utils/v2 v2.6.3 // indirect
 	github.com/klauspost/compress v1.20.3 // indirect
 	github.com/mattn/go-colorable v0.1.16 // indirect
 	github.com/mattn/go-isatty v0.0.24 // indirect
@@ -21,7 +21,7 @@ require (
 	github.com/philhofer/fwd v1.2.1 // indirect
 	github.com/tinylib/msgp v1.6.5 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.76.0 // indirect
+	github.com/valyala/fasthttp v1.77.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/crypto v0.58.0 // indirect
 	golang.org/x/net v0.61.0 // indirect
